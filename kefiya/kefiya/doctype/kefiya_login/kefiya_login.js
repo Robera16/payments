@@ -90,16 +90,16 @@ frappe.ui.form.on('Kefiya Login', {
 				frm.toggle_reqd("account_list",true);
 			},
 			error: function(/* r */) {
-				// frappe.hide_progress();
-				// frm.set_df_property("account_iban","options","");
-				// frm.toggle_display("account_iban",false);
+			
+				frm.set_df_property("account_list","options","");
+				frm.toggle_display("account_list",false);
+				frm.toggle_display("profile_id",false);
 
-				// frappe.run_serially([
-				// 	() => frm.set_value("account_iban",""),
-				// 	() => frm.set_value("iban_list",""),
-				// 	() => frm.set_value("failed_connection",frm.doc.failed_connection + 1),
-				// 	() => frm.save(),
-				// ]);
+				frappe.run_serially([
+					() => frm.set_value("account_list",""),
+					() => frm.set_value("profile_id",""),
+					() => frm.save(),
+				]);
 			}
 		});
 	},
