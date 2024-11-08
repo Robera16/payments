@@ -33,6 +33,12 @@ frappe.ui.form.on('Kefiya Login', {
 		if(!frm.doc.account_iban){
 			frm.toggle_display("account_iban",false);
 		}
+		if(!frm.doc.account_list){
+			frm.toggle_display("account_list",false);
+		}
+		if(!frm.doc.profile_id){
+			frm.toggle_display("profile_id",false);
+		}
 		/*
 		if(!frm.doc.__unsaved && frm.doc.account_nr){
 			frm.toggle_display("transaction_settings_section",true)
@@ -55,6 +61,47 @@ frappe.ui.form.on('Kefiya Login', {
 			frm.events.call_get_login_accounts(frm);
 			frappe.hide_progress();
 		}
+	},
+	load_accounts: function(frm) {
+		if (frm.doc.__unsaved){
+			frm.save().then(() => {
+				frm.events.get_wise_accounts(frm);
+			});
+		}else{
+			frm.events.get_wise_accounts(frm);
+			frappe.hide_progress();
+		}
+	},
+	get_wise_accounts: function(frm){
+
+		frappe.call({
+			method:"kefiya.utils.client.get_wise_accounts",
+			args: {
+				'kefiya_login_docname': frm.doc.name,
+			},
+			callback: function(r) {
+
+				frm.toggle_display("profile_id",true);
+				frm.set_value("profile_id", r.message.profile_id);
+				frm.toggle_display("account_list",true);
+				frm.set_df_property('account_list', 'options', r.message.ids);
+
+				frm.toggle_reqd("profile_id",true);
+				frm.toggle_reqd("account_list",true);
+			},
+			error: function(/* r */) {
+				// frappe.hide_progress();
+				// frm.set_df_property("account_iban","options","");
+				// frm.toggle_display("account_iban",false);
+
+				// frappe.run_serially([
+				// 	() => frm.set_value("account_iban",""),
+				// 	() => frm.set_value("iban_list",""),
+				// 	() => frm.set_value("failed_connection",frm.doc.failed_connection + 1),
+				// 	() => frm.save(),
+				// ]);
+			}
+		});
 	},
 	call_get_login_accounts: function(frm){
 		frappe.call({
@@ -90,5 +137,5 @@ frappe.ui.form.on('Kefiya Login', {
 				]);
 			}
 		});
-	}
+	},
 });

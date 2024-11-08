@@ -6,8 +6,9 @@
  "document_type": "Setup",
  "engine": "InnoDB",
  "field_order": [
-  "defaults_section",
+  "connection_type",
   "login_name",
+  "defaults_section",
   "fints_url",
   "blz",
   "column_break_6",
@@ -18,6 +19,15 @@
   "get_accounts",
   "account_iban",
   "failed_connection",
+  "wise_connection_section",
+  "api_url",
+  "column_break_g4jgb",
+  "api_key",
+  "wise_account_settings_section",
+  "profile",
+  "load_accounts",
+  "profile_id",
+  "account_list",
   "erpnext_account_settings_section",
   "company",
   "erpnext_account",
@@ -28,6 +38,7 @@
  ],
  "fields": [
   {
+   "depends_on": "eval: doc.connection_type == 'FinTS';",
    "fieldname": "defaults_section",
    "fieldtype": "Section Break",
    "label": "FinTS Connection"
@@ -44,13 +55,13 @@
    "fieldname": "fints_url",
    "fieldtype": "Data",
    "label": "Endpoint URL",
-   "reqd": 1
+   "mandatory_depends_on": "eval: doc.connection_type == 'FinTS';"
   },
   {
    "fieldname": "blz",
    "fieldtype": "Data",
    "label": "BLZ",
-   "reqd": 1
+   "mandatory_depends_on": "eval: doc.connection_type == 'FinTS';"
   },
   {
    "fieldname": "column_break_6",
@@ -61,16 +72,17 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Username/Login",
-   "reqd": 1
+   "mandatory_depends_on": "eval: doc.connection_type == 'FinTS';"
   },
   {
    "fieldname": "fints_password",
    "fieldtype": "Password",
    "in_list_view": 1,
    "label": "Password",
-   "reqd": 1
+   "mandatory_depends_on": "eval: doc.connection_type == 'FinTS';"
   },
   {
+   "depends_on": "eval: doc.connection_type == 'FinTS';",
    "fieldname": "import_settings_section",
    "fieldtype": "Section Break",
    "label": "FinTS Account Settings"
@@ -139,11 +151,70 @@
    "label": "Bank Account",
    "options": "Bank Account",
    "reqd": 1
+  },
+  {
+   "default": "FinTS",
+   "fieldname": "connection_type",
+   "fieldtype": "Select",
+   "label": "Connection Type",
+   "options": "FinTS\nWise"
+  },
+  {
+   "depends_on": "eval: doc.connection_type == 'Wise';",
+   "fieldname": "wise_connection_section",
+   "fieldtype": "Section Break",
+   "label": "Wise Connection"
+  },
+  {
+   "default": "https://api.sandbox.transferwise.tech",
+   "fieldname": "api_url",
+   "fieldtype": "Data",
+   "label": "API URL",
+   "mandatory_depends_on": "eval: doc.connection_type == 'Wise';"
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Password",
+   "label": "API Key",
+   "mandatory_depends_on": "eval: doc.connection_type == 'Wise';"
+  },
+  {
+   "fieldname": "column_break_g4jgb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: doc.connection_type == 'Wise';",
+   "fieldname": "wise_account_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Wise Account Settings"
+  },
+  {
+   "fieldname": "load_accounts",
+   "fieldtype": "Button",
+   "label": "Load Accounts"
+  },
+  {
+   "fieldname": "account_list",
+   "fieldtype": "Select",
+   "label": "Account List"
+  },
+  {
+   "fieldname": "profile",
+   "fieldtype": "Select",
+   "label": "Profile",
+   "mandatory_depends_on": "eval: doc.connection_type == 'Wise';",
+   "options": "BUSINESS\nPERSONAL"
+  },
+  {
+   "fieldname": "profile_id",
+   "fieldtype": "Data",
+   "label": "Profile ID",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-university",
  "links": [],
- "modified": "2024-10-25 14:32:19.056703",
+ "modified": "2024-11-07 09:46:12.698694",
  "modified_by": "Administrator",
  "module": "Kefiya",
  "name": "Kefiya Login",

@@ -47,6 +47,20 @@ def get_accounts(kefiya_login, user_scope):
 
 
 @frappe.whitelist()
+def get_wise_accounts(kefiya_login_docname):
+    """Get wise profile Id and balance accounts Id.
+
+    :param kefiya_login: kefiya_login doc name
+    :type kefiya_login: str
+    :return: Wise accounts json formatted
+    """
+    from kefiya.utils.wise_controller import WiseController
+    
+    return WiseController(
+            kefiya_login_docname
+            ).get_wise_accounts()
+
+@frappe.whitelist()
 def new_bank_account(payment_doc, bankData):
     """Create new bank account.
 
