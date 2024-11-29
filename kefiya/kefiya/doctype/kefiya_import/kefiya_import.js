@@ -74,17 +74,25 @@ frappe.ui.form.on('Kefiya Import', {
 	},
 	call_import_transaction: function(frm){
 		// frappe.show_progress(frm.docname,1,100,"Connect via FinTS")
-		frappe.call({
-			method:"kefiya.utils.client.import_fints_transactions",
-			args: {
-				'kefiya_import': frm.docname,
-				'kefiya_login': frm.doc.kefiya_login,
-				'user_scope': frm.docname,
-			},
-			callback: function(/* r */) {
-				frappe.hide_progress();
-				frm.reload_doc();
-			}
-		});
+		let call_method = {
+			"FinTS": "kefiya.utils.client.import_fints_transactions",
+			"Wise": "kefiya.utils.client.import_wise_transactions"
+		}[frm.doc.connection_type];
+
+		if (call_method){
+			frappe.call({
+				method: call_method,
+				args: {
+					'kefiya_import': frm.docname,
+					'kefiya_login': frm.doc.kefiya_login,
+					'user_scope': frm.docname,
+				},
+				callback: function(/* r */) {
+					frappe.hide_progress();
+					frm.reload_doc();
+				}
+			});
+		}
+	
 	}
 });
