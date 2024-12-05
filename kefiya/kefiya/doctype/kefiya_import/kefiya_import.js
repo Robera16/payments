@@ -88,6 +88,7 @@ frappe.ui.form.on('Kefiya Import', {
 					'user_scope': frm.docname,
 				},
 				callback: function(/* r */) {
+					console.log('here is the result')
 					frappe.hide_progress();
 					frm.reload_doc();
 				}

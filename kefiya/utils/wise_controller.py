@@ -96,12 +96,9 @@ class WiseController:
 
         :param kefiya_import: kefiya_import doc name
         :type kefiya_import: str
-        :return: List of transactions
+        :return: None
         """
         try:
-            # self.interactive.show_progress_realtime(
-            #     _("Start transaction import"), 40, reload=False
-            # )
             curr_doc = frappe.get_doc("Kefiya Import", kefiya_import)
             new_bank_transactions = None
             transactions = self.get_wise_transactions(
@@ -112,50 +109,18 @@ class WiseController:
             if(len(transactions) == 0):
                 frappe.msgprint(_("No transaction found"))
             else:
-                # try:
-                #     save_file(
-                #         kefiya_import + ".json",
-                #         json.dumps(
-                #             tansactions, ensure_ascii=False
-                #         ).replace(",", ",\n").encode('utf8'),
-                #         'Kefiya Import',
-                #         kefiya_import,
-                #         folder='Home/Attachments/FinTS',
-                #         decode=False,
-                #         is_private=1,
-                #         df=None
-                #     )
-                # except Exception as e:
-                #     frappe.throw(_("Failed to attach file"), e)
-
-                # curr_doc.start_date = tansactions[0]["date"]
-                # curr_doc.end_date = tansactions[-1]["date"]
-
                 importer = ImportWiseTransaction(self.kefiya_login)
                 importer.kefiya_import(transactions)
 
                 if len(importer.bank_transactions) == 0:
                     frappe.msgprint(_("No new transactions found"))
-                # else:
-                #     # Save payment entries
-                #     frappe.db.commit()
+                else:
+                    # Save bank transactions
+                    frappe.db.commit()
 
-                #     frappe.msgprint(_(
-                #         "Found a total of '{0}' payments"
-                #     ).format(
-                #         len(importer.bank_transactions)
-                #     ))
-                # new_bank_transactions = importer.bank_transactions
+                new_bank_transactions = importer.bank_transactions
 
-            # curr_doc.submit()
-            # self.interactive.show_progress_realtime(
-            #     _("Bank Transaction import completed"), 100, reload=False
-            # )
-
-            # return {
-            #     "transactions": tansactions[:10],
-            #     "payments": new_bank_transactions,
-            # }
+            curr_doc.submit()
 
         except Exception as e:
             frappe.throw(_(

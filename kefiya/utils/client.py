@@ -28,7 +28,7 @@ def import_fints_transactions(kefiya_import, kefiya_login, user_scope):
 
 @frappe.whitelist()
 def import_wise_transactions(kefiya_import, kefiya_login, user_scope):
-    """Create payment entries by FinTS transactions.
+    """Create bank transactions by Wise transactions.
 
     :param kefiya_import: kefiya_import doc name
     :param kefiya_login: kefiya_login doc name
@@ -36,7 +36,7 @@ def import_wise_transactions(kefiya_import, kefiya_login, user_scope):
     :type kefiya_import: str
     :type kefiya_login: str
     :type user_scopet: str
-    :return: List of transactions
+    :return: None
     """
     from kefiya.utils.wise_controller import WiseController
     kefiya_login_docname = kefiya_login
