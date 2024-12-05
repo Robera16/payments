@@ -12,12 +12,17 @@ class ImportWiseTransaction:
         self.kefiya_login = kefiya_login
 
     def kefiya_import(self, wise_transactions):
-        # self.interactive.progress = 0
         total_transactions = len(wise_transactions)
-       
+
         for idx, t in enumerate(wise_transactions):
-            print('***************************')
-            print(t)
+
+            progress = ((idx + 1) / total_transactions) * 100
+            frappe.publish_progress(
+                    progress,
+                    title=_("Importing Transactions"),
+                    description=_("Processing transaction {}/{}").format(idx + 1, total_transactions)
+                )
+
             try:
                 # Convert to positive value if required
                 amount = abs(float(t['amount']['value']))
@@ -33,27 +38,11 @@ class ImportWiseTransaction:
                     )
                     continue
 
-                # txn_number = idx + 1
-                # progress = txn_number / total_transactions * 100
-                # message = _('Query transaction {0} of {1}').format(
-                #     txn_number,
-                #     total_transactions
-                # )
-                # self.interactive.show_progress_realtime(
-                #     message, progress, reload=False
-                # )
-
-                # # date is in YYYY.MM.DD (json)
                 date = self.format_api_date(t['date'])
                 applicant_name = 'applicant_name'
-                # posting_text = t['posting_text']
                 purpose = t['details']['description']
                 # applicant_iban = t['applicant_iban']
                 # applicant_bin = t['applicant_bin']
-
-                # remarkType = ''
-                # paid_to = None
-                # paid_from = None
 
                 transaction_id = t['referenceNumber']
                 if frappe.db.exists(
@@ -66,15 +55,11 @@ class ImportWiseTransaction:
                 if status == 'credit':
                     payment_type = 'Receive'
                     party_type = 'Customer'
-                    paid_to = self.kefiya_login.erpnext_account  # noqa: E501
-                    remarkType = 'Sender'
                     deposit = amount
                     withdrawal = 0
                 elif status == 'debit':
                     payment_type = 'Pay'
                     party_type = 'Supplier'
-                    paid_from = self.kefiya_login.erpnext_account  # noqa: E501
-                    remarkType = 'Receiver'
                     deposit = 0
                     withdrawal = amount
 
@@ -102,7 +87,7 @@ class ImportWiseTransaction:
                 bank_transaction.insert()
                 self.bank_transactions.append(bank_transaction)
             except Exception as e:
-                frappe.log_error("Error importing bank transaction: {}".format(e))
+                frappe.log_error("Error importing bank transaction", "{}\n\n{}".format(t, frappe.get_traceback()))
                 frappe.msgprint("There were some transactions with error. Please, have a look on Error Log.")
 
 
