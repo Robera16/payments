@@ -61,33 +61,20 @@ class WiseController:
         :type end_date: date
         :return: Transaction as json object list
         """
-        # if start_date is None:
-        #     start_date = now_datetime().date() - relativedelta(days=90)
+        if start_date is None:
+            start_date = now_datetime().date() - relativedelta(days=90)
 
-        # if end_date is None:
-        #     end_date = now_datetime().date() - relativedelta(days=1)
+        if end_date is None:
+            end_date = now_datetime().date() - relativedelta(days=1)
 
-        # if (now_datetime().date() - start_date).days >= 90:
-        #     raise NotImplementedError(
-        #         _("Start date more then 90 days in the past")
-        #     )
-
-        # with self.fints_connection:
-        #     account = self.get_fints_account_by_iban(
-        #         self.kefiya_login.account_iban)
-        #     return json.loads(
-        #         json.dumps(
-        #             self.fints_connection.get_transactions(
-        #                 account,
-        #                 start_date,
-        #                 end_date
-        #             ),
-        #             cls=mt940.JSONEncoder
-        #         )
-        #     )
+        if (now_datetime().date() - start_date).days >= 425:
+            raise NotImplementedError(
+                _("Start date more than 425 days in the past")
+            )
     
         response = requests.get(self.url + f"/v1/profiles/{self.profile_id}/balance-statements/{self.account_id}/statement.json?intervalStart={start_date}T00:00:00.000Z&intervalEnd={end_date}T23:59:59.999Z&type=COMPACT", headers=self.headers)
         transactions = response.json()
+
         return transactions['transactions']
 
 
