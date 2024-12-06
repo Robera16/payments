@@ -40,7 +40,10 @@ frappe.ui.form.on('Kefiya Import', {
 	},
 	kefiya_login: function(frm) {
 		if(frm.doc.kefiya_login){
-			frm.save();
+			frappe.db.get_value("Kefiya Login",{'name': frm.doc.kefiya_login},['connection_type'], function(value){
+				frm.set_value('connection_type', value.connection_type);
+				frm.save();
+			});
 		}
 	},
 	from_date: function(frm) {
