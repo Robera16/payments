@@ -157,7 +157,8 @@
    "fieldname": "connection_type",
    "fieldtype": "Select",
    "label": "Connection Type",
-   "options": "FinTS\nWise"
+   "options": "FinTS\nWise",
+   "reqd": 1
   },
   {
    "depends_on": "eval: doc.connection_type == 'Wise';",
@@ -214,7 +215,7 @@
  ],
  "icon": "fa fa-university",
  "links": [],
- "modified": "2024-11-07 09:46:12.698694",
+ "modified": "2024-12-09 15:12:51.406485",
  "modified_by": "Administrator",
  "module": "Kefiya",
  "name": "Kefiya Login",

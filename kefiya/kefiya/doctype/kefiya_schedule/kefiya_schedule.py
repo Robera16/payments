@@ -11,7 +11,9 @@ from frappe.utils import now_datetime
 from frappe.utils.scheduler import is_scheduler_inactive
 from frappe import _
 from kefiya.utils.client import import_fints_transactions
+from kefiya.utils.client import import_wise_transactions
 from kefiya.utils.fints_controller import FinTSController
+from kefiya.utils.wise_controller import WiseController
 # import kefiya.kefiya.doctype.kefiya_import.kefiya_import as fin_imp
 # from kefiya.utils.fints_wrapper import FinTSConnection
 
@@ -85,7 +87,6 @@ def scheduled_import_fints_payments(manual=None):
                         #    overlap = 0
                     else:
                         frappe.db.rollback()
-                        print("skip")
                         continue
 
                     # kefiya_import.from_date = lastruns[0].end_date - relativedelta(days=overlap) # noqa: E501
@@ -93,19 +94,29 @@ def scheduled_import_fints_payments(manual=None):
                 # always import transactions from yesterday
                 kefiya_import.to_date = \
                     now_datetime().date() - relativedelta(days=1)
+                kefiya_import.connection_type = child_item.connection_type
 
                 kefiya_import.save()
                 if manual:
-                    import_fints_transactions(
-                        kefiya_import.name,
-                        child_item.kefiya_login,
-                        schedule_settings.name
-                    )
+                    if child_item.connection_type == "FinTS":
+                        import_fints_transactions(
+                            kefiya_import.name,
+                            child_item.kefiya_login,
+                            schedule_settings.name
+                        )
+                    elif child_item.connection_type == "Wise":
+                        import_wise_transactions(
+                            kefiya_import.name,
+                            child_item.kefiya_login,
+                            schedule_settings.name
+                        )
                 else:
-                    FinTSController(child_item.kefiya_login) \
-                        .import_fints_transactions(kefiya_import.name)
+                    if child_item.connection_type == "FinTS":
+                        FinTSController(child_item.kefiya_login) \
+                            .import_fints_transactions(kefiya_import.name)
+                    elif child_item.connection_type == "Wise":
+                        WiseController(child_item.kefiya_login) \
+                            .import_wise_transactions(kefiya_import.name)
                 # fin_imp.import_transactions(kefiya_import.name, child_item.kefiya_login) # noqa: E501
-
-                print(frappe.as_json(child_item))
         except Exception:
             frappe.log_error(frappe.get_traceback())

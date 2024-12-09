@@ -15,7 +15,7 @@ frappe.ui.form.on('Kefiya Schedule', {
 		frm.add_custom_button(__("Import Transaction"), function(){
 			frm.save().then(() => {
 				frappe.call({
-					method: "kefiya.kefiya.doctype.kefiya_schedule.kefiya_schedule.scheduled_import_kefiya_payments",
+					method: "kefiya.kefiya.doctype.kefiya_schedule.kefiya_schedule.scheduled_import_fints_payments",
 					args: {
 						'manual': true
 					}
@@ -23,4 +23,17 @@ frappe.ui.form.on('Kefiya Schedule', {
 			});
 		}).addClass("btn-primary");
 	}
+});
+
+
+frappe.ui.form.on('Kefiya Schedule Item', {
+    kefiya_login: function (frm, cdt, cdn) {
+		
+		const row = frappe.get_doc(cdt, cdn);
+		if(row.kefiya_login){
+			frappe.db.get_value("Kefiya Login",{'name': row.kefiya_login},['connection_type'], function(value){			
+				frappe.model.set_value(cdt, cdn, 'connection_type', value.connection_type)
+			});
+		}
+    }
 });

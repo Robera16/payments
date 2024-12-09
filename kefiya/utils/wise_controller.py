@@ -4,6 +4,8 @@ from frappe import _
 
 from frappe.utils import now_datetime
 from .import_wise_transaction import ImportWiseTransaction
+from dateutil.relativedelta import relativedelta
+from frappe.utils import now_datetime
 
 class WiseController:
     def __init__(self, kefiya_login_docname):
@@ -97,6 +99,11 @@ class WiseController:
                 frappe.msgprint(_("No transaction found"))
             else:
                 importer = ImportWiseTransaction(self.kefiya_login)
+                transactions = sorted(transactions, key=lambda x: x['date'])
+                
+                curr_doc.start_date = importer.format_api_date(transactions[0]["date"])
+                curr_doc.end_date = importer.format_api_date(transactions[-1]["date"])
+
                 importer.kefiya_import(transactions)
 
                 if len(importer.bank_transactions) == 0:

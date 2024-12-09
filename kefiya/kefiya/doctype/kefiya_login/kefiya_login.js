@@ -28,7 +28,12 @@ frappe.ui.form.on('Kefiya Login', {
 		// if(frm.fields_dict.account_nr.df.reqd && )
 		// frm.toggle_reqd("account_nr",true);
 		if(frm.doc.iban_list){
-			frm.set_df_property("account_iban","options",JSON.parse(frm.doc.iban_list));
+			if (frm.doc.connection_type === "FinTS"){
+				frm.set_df_property("account_iban","options",JSON.parse(frm.doc.iban_list));
+			}
+			else if(frm.doc.connection_type === "Wise"){
+				frm.set_df_property("account_list","options",JSON.parse(frm.doc.iban_list));
+			}
 		}
 		if(!frm.doc.account_iban){
 			frm.toggle_display("account_iban",false);
@@ -85,6 +90,7 @@ frappe.ui.form.on('Kefiya Login', {
 				frm.set_value("profile_id", r.message.profile_id);
 				frm.toggle_display("account_list",true);
 				frm.set_df_property('account_list', 'options', r.message.ids);
+				frm.set_value("iban_list", JSON.stringify(r.message.ids));
 
 				frm.toggle_reqd("profile_id",true);
 				frm.toggle_reqd("account_list",true);
@@ -97,6 +103,7 @@ frappe.ui.form.on('Kefiya Login', {
 
 				frappe.run_serially([
 					() => frm.set_value("account_list",""),
+					() => frm.set_value("iban_list",""),
 					() => frm.set_value("profile_id",""),
 					() => frm.save(),
 				]);
