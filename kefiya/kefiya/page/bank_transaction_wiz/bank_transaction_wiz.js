@@ -19,15 +19,8 @@ kefiya.tools.assignWizard = class assignWizard {
 		this.page = this.parent.page;
 		this.remove_page_buttons();
 		this.make();
-		// this.add_custom()
 	}
 	remove_page_buttons(){
-		// $('.custom-actions').remove()
-		// $('.page-form').remove();	
-		// $('.standard-filter-section').remove()
-
-		// $('.page-form .standard-filter-section .form-group').remove();
-		// $('[data-fieldname="bank_account"]').remove();
 		$('.menu-btn-group').remove()
 	}
 
@@ -46,7 +39,7 @@ kefiya.tools.assignWizard = class assignWizard {
 		const me = this;
 		me.page.hide_icon_group();
 		me.clear_page_content();
-		let result = await this.fetchKefiyaSettings()
+		let result = await this.fetchKefiyaSettings();
 		me.make_assignWizard_tool(result, me.change_match_against.bind(me));
 		// me.add_actions();
 	}
@@ -211,10 +204,7 @@ kefiya.tools.AssignWizardTool = class AssignWizardTool extends (
 				"due_date",
 				"currency",
 				"paid_amount",
-<<<<<<< Updated upstream
-=======
 				"bill_no",
->>>>>>> Stashed changes
 			];
 		} else if (this.kefiyaSettings.assign_against === 'Journal Entry'){
 			this.fields = [
